@@ -2,11 +2,9 @@
 #include "cyhal.h"
 #include "cybsp.h"
 
-
 int ciclo=100;
 cyhal_pwm_t pwm_obj;
 
-//Interrupt handler
 static void button1(void *handler_arg, cyhal_gpio_event_t event)
 {
 	cyhal_gpio_toggle(CYBSP_USER_LED);
@@ -14,22 +12,21 @@ static void button1(void *handler_arg, cyhal_gpio_event_t event)
 
 static void button2(void *handler_arg, cyhal_gpio_event_t event)
 {
-    		for(int i=0;i<10;i++){
-			cyhal_gpio_toggle(P9_0);
-			cyhal_system_delay_ms(250);
-			}
+    for(int i=0;i<10;i++)
+	{
+		cyhal_gpio_toggle(P9_0);
+		cyhal_system_delay_ms(250);
+	}
 }
 
 static void button3(void *handler_arg, cyhal_gpio_event_t event)
 {
-
-		ciclo-=20;
-		if(ciclo<0)ciclo=100;
-		cyhal_pwm_set_duty_cycle(&pwm_obj, ciclo, 200);
-		cyhal_system_delay_ms(250);
+	ciclo-=20;
+	if(ciclo<0)ciclo=100;
+	cyhal_pwm_set_duty_cycle(&pwm_obj, ciclo, 200);
+	cyhal_system_delay_ms(250);
 }
 
-// GPIO callback initialization structure
 cyhal_gpio_callback_data_t cb_data_bot1 =
 {
 	.callback     = button1,
@@ -76,8 +73,6 @@ int main(void)
 	cyhal_pwm_set_duty_cycle(&pwm_obj, ciclo, 1000);
 	cyhal_pwm_start(&pwm_obj);
 
-
-
 	/* GPIO interrupt para boton usuario */
 	cyhal_gpio_register_callback(CYBSP_USER_BTN, &cb_data_bot1);
 	cyhal_gpio_enable_event(CYBSP_USER_BTN, CYHAL_GPIO_IRQ_FALL, 1, true);
@@ -90,20 +85,12 @@ int main(void)
 	cyhal_gpio_register_callback(P9_4, &cb_data_bot3);
 	cyhal_gpio_enable_event(P9_4, CYHAL_GPIO_IRQ_FALL, 3, true);
 
-
-
-
-
-
-
-
     __enable_irq();
 
     for (;;)
     {
     	//Enter deep sleep mode
 		cyhal_syspm_deepsleep();
-
     }
 
 }
